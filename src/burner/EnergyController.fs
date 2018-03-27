@@ -24,6 +24,8 @@ WiringPi.Core.PinMode(0, PinMode.Output)
 WiringPi.Core.PinMode(2, PinMode.Output)
 WiringPi.Core.PinMode(1, PinMode.PwmOutput)
 
+printfn "Initialized WiringPi"
+
 let heatingController = MailboxProcessor.Start(fun inbox ->
     let (|High|InRange|) x =
         if(x > 2000) then High
