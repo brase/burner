@@ -10,6 +10,8 @@ open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open Microsoft.AspNetCore.Http
 
+open burner.EnergyController
+
 // ---------------------------------
 // Models
 // ---------------------------------
