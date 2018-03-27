@@ -9,6 +9,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open Microsoft.AspNetCore.Http
+open Com.Enterprisecoding.RPI.GPIO
 
 open burner.EnergyController
 
@@ -117,6 +118,11 @@ let configureLogging (builder : ILoggingBuilder) =
 
 [<EntryPoint>]
 let main _ =
+    let result = WiringPi.Core.Setup()
+    match result with
+    | -1 -> failwith "Setup WiringPi failed"
+    | _ -> ()
+
     let contentRoot = Directory.GetCurrentDirectory()
     let webRoot     = Path.Combine(contentRoot, "WebRoot")
     WebHostBuilder()

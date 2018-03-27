@@ -1,5 +1,7 @@
 module burner.EnergyController
 
+open Com.Enterprisecoding.RPI.GPIO
+
 type EnergyDataFields = { TimeStamp: int64
                           Value: int }
 
