@@ -1,6 +1,7 @@
 module burner.EnergyController
 
 open Com.Enterprisecoding.RPI.GPIO
+open Com.Enterprisecoding.RPI.GPIO.Enums
 
 type EnergyDataFields = { TimeStamp: int64
                           Value: int }
@@ -14,6 +15,18 @@ type Power = {
     Output: int
 }
 
+let (|High|InRange|) x =
+    if(x > 2000) then High
+    else InRange
+
+let highGuard x =
+    match x with
+    | High -> 2000
+    | InRange -> x
+
+let translateToPwm x =
+    2000 / 1024 * x
+
 let heatingController = MailboxProcessor.Start(fun inbox ->
     let rec loop() = async {
         let! msg = inbox.Receive()
@@ -21,14 +34,18 @@ let heatingController = MailboxProcessor.Start(fun inbox ->
         printfn "Output %i" msg.Output
 
         match msg.Input > 0 with
-        |true -> () // Digital Write 1
-        | _ -> () //Digital Write 0
+        |true -> WiringPi.Core.DigitalWrite(0, DigitalValue.High) // Digital Write 1
+        | _ -> WiringPi.Core.DigitalWrite(0, DigitalValue.Low) //Digital Write 0
 
         match msg.Output > 0 with
-        |true -> () // Digital Write 1
-        | _ -> () //Digital Write 0
+        |true -> WiringPi.Core.DigitalWrite(2, DigitalValue.High) // Digital Write 1
+        | _ -> WiringPi.Core.DigitalWrite(2, DigitalValue.Low) //Digital Write 0
 
         //Write Output to PWM 0 - 2000
+        let pwmValue = msg.Output
+                       |> highGuard
+                       |> translateToPwm
+        WiringPi.Core.PWMWrite(1, pwmValue)
 
         return! loop()
     }

@@ -12,6 +12,7 @@ open Microsoft.AspNetCore.Http
 open Com.Enterprisecoding.RPI.GPIO
 
 open burner.EnergyController
+open Com.Enterprisecoding.RPI.GPIO.Enums
 
 // ---------------------------------
 // Models
@@ -122,6 +123,10 @@ let main _ =
     match result with
     | -1 -> failwith "Setup WiringPi failed"
     | _ -> ()
+
+    WiringPi.Core.PinMode(0, PinMode.Output)
+    WiringPi.Core.PinMode(2, PinMode.Output)
+    WiringPi.Core.PinMode(1, PinMode.PwmOutput)
 
     let contentRoot = Directory.GetCurrentDirectory()
     let webRoot     = Path.Combine(contentRoot, "WebRoot")
