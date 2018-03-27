@@ -37,7 +37,7 @@ let heatingController = MailboxProcessor.Start(fun inbox ->
         | InRange -> x
 
     let translateToPwm x =
-        2000 / 1024 * x
+        int (1024. / 2000. * (float x))
 
     let rec loop() = async {
         let! msg = inbox.Receive()
