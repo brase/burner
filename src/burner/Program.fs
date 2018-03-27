@@ -67,6 +67,13 @@ let pushHandler =
             let! data = streamreader.ReadToEndAsync()
             printfn "%s" data
             printfn ""
+
+            //TODO: deserialize JSON and identify input/output
+            (*energyDataProcessor.Post (EnergyController.Input {TimeStamp = 0L
+                                                              Value = 0})
+
+            energyDataProcessor.Post (EnergyController.Output {TimeStamp = 0L
+                                                               Value = 0})*)
             return! Successful.OK "" next ctx
         }
 
