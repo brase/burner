@@ -45,14 +45,13 @@ let heatingController = MailboxProcessor.Start(fun inbox ->
         printfn "Output %i" msg.Output
 
         match msg.Input > 0 with
-        |true -> WiringPi.Core.DigitalWrite(0, DigitalValue.High) // Digital Write 1
-        | _ -> WiringPi.Core.DigitalWrite(0, DigitalValue.Low) //Digital Write 0
+        |true -> WiringPi.Core.DigitalWrite(0, DigitalValue.High)
+        | _ -> WiringPi.Core.DigitalWrite(0, DigitalValue.Low)
 
         match msg.Output > 0 with
-        |true -> WiringPi.Core.DigitalWrite(2, DigitalValue.High) // Digital Write 1
-        | _ -> WiringPi.Core.DigitalWrite(2, DigitalValue.Low) //Digital Write 0
+        |true -> WiringPi.Core.DigitalWrite(2, DigitalValue.High)
+        | _ -> WiringPi.Core.DigitalWrite(2, DigitalValue.Low)
 
-        //Write Output to PWM 0 - 2000
         let pwmValue = msg.Output
                        |> highGuard
                        |> translateToPwm
