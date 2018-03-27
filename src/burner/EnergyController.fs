@@ -15,19 +15,19 @@ type Power = {
     Output: int
 }
 
-let (|High|InRange|) x =
-    if(x > 2000) then High
-    else InRange
-
-let highGuard x =
-    match x with
-    | High -> 2000
-    | InRange -> x
-
-let translateToPwm x =
-    2000 / 1024 * x
-
 let heatingController = MailboxProcessor.Start(fun inbox ->
+    let (|High|InRange|) x =
+        if(x > 2000) then High
+        else InRange
+
+    let highGuard x =
+        match x with
+        | High -> 2000
+        | InRange -> x
+
+    let translateToPwm x =
+        2000 / 1024 * x
+
     let rec loop() = async {
         let! msg = inbox.Receive()
         printfn "Input %i" msg.Input
