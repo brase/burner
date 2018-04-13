@@ -9,10 +9,9 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open Microsoft.AspNetCore.Http
-open Com.Enterprisecoding.RPI.GPIO
 
 open burner.EnergyController
-open Com.Enterprisecoding.RPI.GPIO.Enums
+open burner.Config
 
 // ---------------------------------
 // Models
@@ -22,6 +21,13 @@ type Message =
     {
         Text : string
     }
+
+type VzloggerInput = {
+    data: VzloggerData list
+} and VzloggerData = {
+    uuid: System.Guid
+    tuples: float list list
+}
 
 // ---------------------------------
 // Views
@@ -60,6 +66,16 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
+let getLatestValue (vzloggerInput:VzloggerInput) id =
+    let needed = vzloggerInput.data
+                 |> List.choose (fun x -> if(x.uuid = id) then Some x else None)
+                 |> List.collect (fun x -> x.tuples)
+                 |> List.sortByDescending (fun x -> x.Head)
+                 |> List.tryHead
+    match needed with
+    | Some [x; y] -> Some (x,y)
+    | _ -> None
+
 let pushHandler =
     fun (next: HttpFunc) (ctx:HttpContext) ->
         task {
@@ -68,12 +84,24 @@ let pushHandler =
             printfn "%s" data
             printfn ""
 
-            //TODO: deserialize JSON and identify input/output
-            (*energyDataProcessor.Post (EnergyController.Input {TimeStamp = 0L
-                                                              Value = 0})
+            let inputId = System.Guid.Parse(configuration.["CounterIds:Input"])
+            let outputId = System.Guid.Parse(configuration.["CounterIds:Output"])
 
-            energyDataProcessor.Post (EnergyController.Output {TimeStamp = 0L
-                                                               Value = 0})*)
+            let values = unjson<VzloggerInput> data
+
+            let inputValue = getLatestValue values inputId
+            let outputValue = getLatestValue values outputId
+
+            match inputValue with
+            | Some (x,y) -> energyDataProcessor.Post (EnergyController.Input {TimeStamp = int64 x
+                                                                              Value = int y})
+            | _ -> ()
+
+            match outputValue with
+            | Some (x,y) -> energyDataProcessor.Post (EnergyController.Output {TimeStamp = int64 x
+                                                                               Value = int y})
+            | _ -> ()
+
             return! Successful.OK "" next ctx
         }
 
@@ -126,6 +154,9 @@ let configureLogging (builder : ILoggingBuilder) =
 
 [<EntryPoint>]
 let main _ =
+    printfn "Input: %s" configuration.["Input"]
+    printfn "Output: %s" configuration.["Output"]
+
     let contentRoot = Directory.GetCurrentDirectory()
     let webRoot     = Path.Combine(contentRoot, "WebRoot")
     WebHostBuilder()

@@ -5,7 +5,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Json.fs" />
     <Compile Include="EnergyController.fs" />
+    <Compile Include="Config.fs" />
     <Compile Include="Program.fs" />
     <None Include="web.config" />
     <Content Include="WebRoot/**/*">
@@ -14,16 +16,21 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Enterprisecoding.RPI.GPIO" Version="1.1.0" />
+    <PackageReference Include="Fable.JsonConverter" Version="1.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.*" />
     <PackageReference Include="Giraffe" Version="1.1.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 </Project>
