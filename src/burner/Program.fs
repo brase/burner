@@ -84,8 +84,8 @@ let pushHandler =
             printfn "%s" data
             printfn ""
 
-            let inputId = System.Guid.Parse(configuration.["CounterIds:Input"])
-            let outputId = System.Guid.Parse(configuration.["CounterIds:Output"])
+            let inputId = System.Guid.Parse(configuration.["Input"])
+            let outputId = System.Guid.Parse(configuration.["Output"])
 
             let values = unjson<VzloggerInput> data
 
@@ -94,12 +94,12 @@ let pushHandler =
 
             match inputValue with
             | Some (x,y) -> energyDataProcessor.Post (EnergyController.Input {TimeStamp = int64 x
-                                                                              Value = int y})
+                                                                              Value = y})
             | _ -> ()
 
             match outputValue with
             | Some (x,y) -> energyDataProcessor.Post (EnergyController.Output {TimeStamp = int64 x
-                                                                               Value = int y})
+                                                                               Value = y})
             | _ -> ()
 
             return! Successful.OK "" next ctx
