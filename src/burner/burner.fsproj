@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>burner</AssemblyName>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Json.fs" />
@@ -15,7 +15,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Enterprisecoding.RPI.GPIO" Version="1.1.0" />
     <PackageReference Include="Fable.JsonConverter" Version="1.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.*" />
@@ -32,5 +31,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.*" />
     <PackageReference Include="Giraffe" Version="1.1.*" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Unosquare.Raspberry.IO" Version="0.14.0" />
   </ItemGroup>
 </Project>

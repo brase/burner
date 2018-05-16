@@ -1,7 +1,7 @@
 module burner.EnergyController
 
-open Com.Enterprisecoding.RPI.GPIO
-open Com.Enterprisecoding.RPI.GPIO.Enums
+open Unosquare.RaspberryIO
+open Unosquare.RaspberryIO.Gpio
 
 type EnergyDataFields = { TimeStamp: int64
                           Value: float }
@@ -15,18 +15,27 @@ type Power = {
     Output: float
 }
 
-let result = WiringPi.Core.Setup()
-match result with
-| -1 -> failwith "Setup WiringPi failed"
-| _ -> printfn "Setup WiringpPi successful: %i" result
+//let result = WiringPi.Core.Setup()
+// match result with
+// | -1 -> failwith "Setup WiringPi failed"
+// | _ -> printfn "Setup WiringpPi successful: %i" result
 
-WiringPi.Core.PinMode(0, PinMode.Output)
-WiringPi.Core.PinMode(2, PinMode.Output)
-WiringPi.Core.PinMode(1, PinMode.PwmOutput)
+// WiringPi.Core.PinMode(0, PinMode.Output)
+let input = Pi.Gpio.[0]
+input.PinMode <- GpioPinDriveMode.Output
+// WiringPi.Core.PinMode(2, PinMode.Output)
+let output = Pi.Gpio.[2]
+output.PinMode <- GpioPinDriveMode.Output
+// WiringPi.Core.PinMode(1, PinMode.PwmOutput)
+let pwm = Pi.Gpio.[1]
+pwm.PinMode <- GpioPinDriveMode.PwmOutput
 
 //WiringPi.OnBoardHardware.PwmSetMode(int PWMMode.MS)
+pwm.PwmMode <- PwmMode.MarkSign
 //WiringPi.OnBoardHardware.PwmSetClock(192)
+pwm.PwmClockDivisor <- 192
 //WiringPi.OnBoardHardware.PwmSetRange(1023u)
+pwm.PwmRange <- 1023u
 
 printfn "Initialized WiringPi"
 
@@ -49,17 +58,17 @@ let heatingController = MailboxProcessor.Start(fun inbox ->
         printfn "Output %f W" msg.Output
 
         match msg.Input > 0. with
-        |true -> printfn "Input: True" //WiringPi.Core.DigitalWrite(0, DigitalValue.Low)
-        | _ -> printfn "Input: False" //WiringPi.Core.DigitalWrite(0, DigitalValue.High)
+        |true -> input.Write(false)
+        | _ -> input.Write(true)
 
         match msg.Output > 0. with
-        |true -> printfn "Output: True" //WiringPi.Core.DigitalWrite(2, DigitalValue.Low)
-        | _ -> printfn "Output: False"//WiringPi.Core.DigitalWrite(2, DigitalValue.High)
+        |true -> output.Write(false)
+        | _ -> output.Write(true)
 
         let pwmValue = msg.Output
                        |> highGuard
                        |> translateToPwm
-        //WiringPi.Core.PWMWrite(1, pwmValue)
+        pwm.PwmRegister <- pwmValue //WiringPi.Core.PWMWrite(1, pwmValue)
         printfn "PWM: %i" pwmValue
 
         return! loop()
