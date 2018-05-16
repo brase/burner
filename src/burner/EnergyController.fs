@@ -1,7 +1,7 @@
 module burner.EnergyController
 
-//open Com.Enterprisecoding.RPI.GPIO
-//open Com.Enterprisecoding.RPI.GPIO.Enums
+open Com.Enterprisecoding.RPI.GPIO
+open Com.Enterprisecoding.RPI.GPIO.Enums
 
 type EnergyDataFields = { TimeStamp: int64
                           Value: float }
@@ -15,18 +15,18 @@ type Power = {
     Output: float
 }
 
-// let result = WiringPi.Core.Setup()
-// match result with
-// | -1 -> failwith "Setup WiringPi failed"
-// | _ -> ()
+let result = WiringPi.Core.Setup()
+match result with
+| -1 -> failwith "Setup WiringPi failed"
+| _ -> printfn "Setup WiringpPi successful: %i" result
 
-// WiringPi.Core.PinMode(0, PinMode.Output)
-// WiringPi.Core.PinMode(2, PinMode.Output)
-// WiringPi.Core.PinMode(1, PinMode.PwmOutput)
+WiringPi.Core.PinMode(0, PinMode.Output)
+WiringPi.Core.PinMode(2, PinMode.Output)
+WiringPi.Core.PinMode(1, PinMode.PwmOutput)
 
-// WiringPi.OnBoardHardware.PwmSetMode(int PWMMode.MS)
-// WiringPi.OnBoardHardware.PwmSetClock(192)
-// WiringPi.OnBoardHardware.PwmSetRange(1023u)
+//WiringPi.OnBoardHardware.PwmSetMode(int PWMMode.MS)
+//WiringPi.OnBoardHardware.PwmSetClock(192)
+//WiringPi.OnBoardHardware.PwmSetRange(1023u)
 
 printfn "Initialized WiringPi"
 
