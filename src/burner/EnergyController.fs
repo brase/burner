@@ -15,26 +15,16 @@ type Power = {
     Output: float
 }
 
-//let result = WiringPi.Core.Setup()
-// match result with
-// | -1 -> failwith "Setup WiringPi failed"
-// | _ -> printfn "Setup WiringpPi successful: %i" result
-
-// WiringPi.Core.PinMode(0, PinMode.Output)
 let input = Pi.Gpio.[0]
 input.PinMode <- GpioPinDriveMode.Output
-// WiringPi.Core.PinMode(2, PinMode.Output)
+
 let output = Pi.Gpio.[2]
 output.PinMode <- GpioPinDriveMode.Output
-// WiringPi.Core.PinMode(1, PinMode.PwmOutput)
+
 let pwm = Pi.Gpio.[1]
 pwm.PinMode <- GpioPinDriveMode.PwmOutput
-
-//WiringPi.OnBoardHardware.PwmSetMode(int PWMMode.MS)
 pwm.PwmMode <- PwmMode.MarkSign
-//WiringPi.OnBoardHardware.PwmSetClock(192)
 pwm.PwmClockDivisor <- 192
-//WiringPi.OnBoardHardware.PwmSetRange(1023u)
 pwm.PwmRange <- 1023u
 
 printfn "Initialized WiringPi"
@@ -57,18 +47,13 @@ let heatingController = MailboxProcessor.Start(fun inbox ->
         printfn "Input %f W" msg.Input
         printfn "Output %f W" msg.Output
 
-        match msg.Input > 0. with
-        |true -> input.Write(false)
-        | _ -> input.Write(true)
-
-        match msg.Output > 0. with
-        |true -> output.Write(false)
-        | _ -> output.Write(true)
+        input.Write(msg.Input <= 0.)
+        output.Write(msg.Output <= 0.)
 
         let pwmValue = msg.Output
                        |> highGuard
                        |> translateToPwm
-        pwm.PwmRegister <- pwmValue //WiringPi.Core.PWMWrite(1, pwmValue)
+        pwm.PwmRegister <- pwmValue
         printfn "PWM: %i" pwmValue
 
         return! loop()
@@ -108,20 +93,20 @@ let energyDataProcessor = MailboxProcessor.Start(fun inbox->
         let! msg = inbox.Receive()
 
         match msg with
-        | Input a -> let inputFields = unwrapData input
+        | Input _ -> let inputFields = unwrapData input
                      match inputFields.TimeStamp with
                      | 0L -> return! messageLoop msg output inputPower outputPower
                      | _ -> let inputPower = currentPower input msg
                             heatingController.Post {Input = inputPower
                                                     Output = outputPower}
                             return! messageLoop msg output inputPower outputPower
-        | Output a -> let outputFields = unwrapData output
+        | Output _ -> let outputFields = unwrapData output
                       match outputFields.TimeStamp with
-                      | 0L -> return! messageLoop input  msg  inputPower  outputPower
+                      | 0L -> return! messageLoop input msg inputPower outputPower
                       | _ -> let outputPower = currentPower output msg
                              heatingController.Post {Input = inputPower
                                                      Output = outputPower}
-                             return! messageLoop msg output inputPower outputPower
+                             return! messageLoop input msg inputPower outputPower
     }
 
     // start the loop
