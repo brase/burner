@@ -20,11 +20,6 @@ open burner.Config
 // Models
 // ---------------------------------
 
-type Message =
-    {
-        Text : string
-    }
-
 type VzloggerInput = {
     data: VzloggerData list
 } and VzloggerData = {
@@ -33,41 +28,8 @@ type VzloggerInput = {
 }
 
 // ---------------------------------
-// Views
-// ---------------------------------
-
-module Views =
-    open GiraffeViewEngine
-
-    let layout (content: XmlNode list) =
-        html [] [
-            head [] [
-                title []  [ encodedText "burner" ]
-                link [ _rel  "stylesheet"
-                       _type "text/css"
-                       _href "/main.css" ]
-            ]
-            body [] content
-        ]
-
-    let partial () =
-        h1 [] [ encodedText "burner" ]
-
-    let index (model : Message) =
-        [
-            partial()
-            p [] [ encodedText model.Text ]
-        ] |> layout
-
-// ---------------------------------
 // Web app
 // ---------------------------------
-
-let indexHandler (name : string) =
-    let greetings = sprintf "Hello %s, from Giraffe!" name
-    let model     = { Text = greetings }
-    let view      = Views.index model
-    htmlView view
 
 let getLatestValue (vzloggerInput:VzloggerInput) id =
     let needed = vzloggerInput.data
@@ -110,11 +72,6 @@ let pushHandler =
 
 let webApp =
     choose [
-        GET >=>
-            choose [
-                route "/" >=> indexHandler "world"
-                routef "/hello/%s" indexHandler
-            ]
         POST >=> choose [
             route "/push" >=> pushHandler
         ]

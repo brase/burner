@@ -35,4 +35,3 @@ msbuild.wrn
 .fake/
 .ionide/
 packages/
-.ionide/symbolCache.db
