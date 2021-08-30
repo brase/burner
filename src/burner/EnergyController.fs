@@ -16,21 +16,21 @@ type Power = {
     Output: float
 }
 
-let input = Pi.Gpio.[0]
-input.PinMode <- GpioPinDriveMode.Output
-
-let output = Pi.Gpio.[2]
-output.PinMode <- GpioPinDriveMode.Output
-
-let pwm = Pi.Gpio.[1]  :?> Unosquare.WiringPi.GpioPin
-pwm.PinMode <- GpioPinDriveMode.PwmOutput
-pwm.PwmMode <- PwmMode.MarkSign
-pwm.PwmClockDivisor <- 192
-pwm.PwmRange <- 1023u
-
-printfn "Initialized WiringPi"
-
 let heatingController = MailboxProcessor.Start(fun inbox ->
+    let input = Pi.Gpio.[0]
+    input.PinMode <- GpioPinDriveMode.Output
+
+    let output = Pi.Gpio.[2]
+    output.PinMode <- GpioPinDriveMode.Output
+
+    let pwm = Pi.Gpio.[1]  :?> Unosquare.WiringPi.GpioPin
+    pwm.PinMode <- GpioPinDriveMode.PwmOutput
+    pwm.PwmMode <- PwmMode.MarkSign
+    pwm.PwmClockDivisor <- 192
+    pwm.PwmRange <- 1023u
+
+    printfn "Initialized WiringPi"
+
     let (|High|InRange|) x =
         if(x > 2000.) then High
         else InRange
