@@ -1,7 +1,8 @@
 module burner.EnergyController
 
 open Unosquare.RaspberryIO
-open Unosquare.RaspberryIO.Gpio
+open Unosquare.RaspberryIO.Abstractions
+open Unosquare.WiringPi
 
 type EnergyDataFields = { TimeStamp: int64
                           Value: float }
@@ -21,7 +22,7 @@ input.PinMode <- GpioPinDriveMode.Output
 let output = Pi.Gpio.[2]
 output.PinMode <- GpioPinDriveMode.Output
 
-let pwm = Pi.Gpio.[1]
+let pwm = Pi.Gpio.[1]  :?> Unosquare.WiringPi.GpioPin
 pwm.PinMode <- GpioPinDriveMode.PwmOutput
 pwm.PwmMode <- PwmMode.MarkSign
 pwm.PwmClockDivisor <- 192
